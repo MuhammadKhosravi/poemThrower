@@ -21,6 +21,7 @@ GANJOOR_API_URL = "https://api.ganjoor.net"
 def get_random_poem():
     response = requests.get(f"{GANJOOR_API_URL}/api/ganjoor/poem/random", params={"poetId": 7})
     if response.status_code == 200:
+        logger.info("Sent poem.")
         return response.json()
     logger.error("Failed to get random poem")
     return ""
@@ -32,9 +33,10 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['send_poem'])
 def start_sending_audio(message):
-    poemDict = get_random_poem()
-    poemText = poemDict["plainText"]
-    bot.reply_to(message, poemText)
+    poem_dict = get_random_poem()
+    poem_text = poem_dict["plainText"]
+    poem_title = poem_dict["fullTitle"]
+    bot.reply_to(message, f"{poem_text}\n**{poem_title}**")
 
 
 # @bot.message_handler(content_types=['audio'])
@@ -50,4 +52,5 @@ def start_sending_audio(message):
 
 
 if __name__ == '__main__':
-    bot.infinity_polling()
+    # bot.infinity_polling()
+    print(get_random_poem())
