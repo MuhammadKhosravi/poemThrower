@@ -36,7 +36,7 @@ def start_sending_audio(message):
     poem_dict = get_random_poem()
     poem_text = poem_dict["plainText"]
     poem_title = poem_dict["fullTitle"]
-    bot.reply_to(message, f"{poem_text}\n**{poem_title}**", parse_mode='Markdown')
+    bot.reply_to(message, f"{poem_text}\n*{poem_title}*", parse_mode='Markdown')
 
 
 # @bot.message_handler(content_types=['audio'])
