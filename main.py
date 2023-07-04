@@ -52,5 +52,4 @@ def start_sending_audio(message):
 
 
 if __name__ == '__main__':
-    # bot.infinity_polling()
-    print(get_random_poem())
+    bot.infinity_polling()
