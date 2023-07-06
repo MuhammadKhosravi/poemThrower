@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import constants
 from dbconnector import DBConnector
 from user import User
+from user import get_base
 
 
 
@@ -62,6 +63,8 @@ def register_new_user():
     logger.info("connected to mysql")
     connector.create_session()
     logger.info("created a session")
+    base = get_base()
+    base.create_all(connector.engine)
     user = User(name='mamadoo', username='mamadoo')
     logger.info("created a user")
     connector.session.add(user)
