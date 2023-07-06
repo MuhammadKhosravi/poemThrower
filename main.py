@@ -58,7 +58,7 @@ def get_user_favorite_poet(username):
     result = mysql_connection.session.execute(stmt)
     user = [x for x in result][0]
     logger.info("here?")
-    logger.info(f"this is the result {user.favorite_poet}")
+    logger.info(f"this is the result {user}")
     return poet_id
 
 
