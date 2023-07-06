@@ -9,6 +9,7 @@ from user import User
 from user import get_base
 
 
+load_dotenv()
 def initialize_telebot():
     BOT_TOKEN = os.getenv('BOT_TOKEN')
     bot = telebot.TeleBot(BOT_TOKEN)
@@ -77,6 +78,5 @@ def initialize_logger():
 
 
 if __name__ == '__main__':
-    load_dotenv()
     logger = initialize_logger()
     bot.infinity_polling()
