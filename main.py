@@ -54,12 +54,11 @@ def start_sending_audio(message):
 
 
 def get_user_favorite_poet(username):
-    stmt = select(User).where(username==username)
+    stmt = select(User.favorite_poet).where(username == username)
     result = mysql_connection.session.execute(stmt)
-    user = [x for x in result][0]
-    logger.info("here?")
-    logger.info(f"this is the result {user}")
-    return poet_id
+    r = [x for x in result][0]
+    logger.info(f"this is the result {r}")
+    return r[0]
 
 
 @bot.message_handler(regexp=r"(1|2|3|7)")
