@@ -64,8 +64,8 @@ def register_new_user(user_info):
     base = get_base()
     base.metadata.create_all(mysql_connection.engine)
     user = User(**user_info)
-    connector.session.add(user)
-    connector.session.commit()
+    mysql_connection.session.add(user)
+    mysql_connection.session.commit()
 
 def establish_db_connection():
     connector = DBConnector(host=os.getenv("MYSQL_HOST"),
