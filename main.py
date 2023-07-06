@@ -7,7 +7,7 @@ import constants
 from dbconnector import DBConnector
 from user import User
 from user import get_base
-from sqlalchemy import update
+from sqlalchemy import update, select
 
 load_dotenv()
 
@@ -35,8 +35,8 @@ def send_welcome(message):
     bot.send_message(message.chat.id, constants.POEM_CHOICE_TEXT)
 
 
-def get_random_poem():
-    response = requests.get(f"{constants.GANJOOR_API_URL}/api/ganjoor/poem/random", params={"poetId": 7})
+def get_random_poem(poet_id):
+    response = requests.get(f"{constants.GANJOOR_API_URL}/api/ganjoor/poem/random", params={"poetId": poet_id})
     if response.status_code == 200:
         logger.info("Sent poem.")
         return response.json()
@@ -46,10 +46,18 @@ def get_random_poem():
 
 @bot.message_handler(commands=["send_now"])
 def start_sending_audio(message):
-    poem_dict = get_random_poem()
+    user_fav_poet = get_user_favorite_poet(message.from_user.username)
+    poem_dict = get_random_poem(user_fav_poet)
     poem_text = poem_dict["plainText"]
     poem_title = poem_dict["fullTitle"]
     bot.reply_to(message, f"{poem_text}\n\n*{poem_title}*", parse_mode='Markdown')
+
+
+def get_user_favorite_poet(username):
+    stmt = select(User).where(username=username)
+    result = mysql_connection.session.execute(stmt)
+    logger.info(f"this is the result {result}")
+    return 7
 
 
 @bot.message_handler(regexp=r"(1|2|3|7)")
