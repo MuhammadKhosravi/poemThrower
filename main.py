@@ -7,8 +7,16 @@ import constants
 from dbconnector import DBConnector
 from user import User
 
+
+def initialize_telebot():
+    BOT_TOKEN = os.getenv('BOT_TOKEN')
+    bot = telebot.TeleBot(BOT_TOKEN)
+    return bot
+
+
 logger = None
-bot = None
+
+bot = initialize_telebot()
 
 
 @bot.message_handler(commands=['start', 'hello'])
@@ -69,15 +77,8 @@ def initialize_logger():
     return logger
 
 
-def initialize_telebot():
-    BOT_TOKEN = os.getenv('BOT_TOKEN')
-    bot = telebot.TeleBot(BOT_TOKEN)
-    return bot
-
-
 if __name__ == '__main__':
     load_dotenv()
     logger = initialize_logger()
 
-    bot = initialize_telebot()
     # bot.infinity_polling()
