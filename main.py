@@ -22,7 +22,7 @@ bot = initialize_telebot()
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
     logger.info(f"this is message object {message}")
-    register_new_user()
+    # register_new_user()
     bot.reply_to(message, constants.WELCOME_TEXT)
 
 
@@ -62,9 +62,9 @@ def register_new_user(user_info):
     connector.create_session()
     base = get_base()
     base.metadata.create_all(connector.engine)
-    user = User(name='mamadoo', username='mamadoo')
-    connector.session.add(user)
-    connector.session.commit()
+    # user = User(name='mamadoo', username='mamadoo')
+    # connector.session.add(user)
+    # connector.session.commit()
 
 
 def initialize_logger():
