@@ -54,7 +54,7 @@ def start_sending_audio(message):
 
 
 def get_user_favorite_poet(username):
-    stmt = select(User).where(username=username)
+    stmt = select(User).where(username==username)
     result = mysql_connection.session.execute(stmt)
     logger.info(f"this is the result {result}")
     return 7
