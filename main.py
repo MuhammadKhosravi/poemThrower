@@ -79,5 +79,5 @@ if __name__ == '__main__':
     load_dotenv()
     logger = initialize_logger()
 
-    # bot = initialize_telebot()
+    bot = initialize_telebot()
     # bot.infinity_polling()
