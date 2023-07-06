@@ -3,32 +3,26 @@ import os
 import requests
 import telebot
 from dotenv import load_dotenv
+import constants
+from dbconnector import DBConnector
+from user import User
 
-load_dotenv()
+logger = None
+bot = None
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(handler)
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-bot = telebot.TeleBot(BOT_TOKEN)
+@bot.message_handler(commands=['start', 'hello'])
+def send_welcome(message):
+    bot.reply_to(message, constants.WELCOME_TEXT)
 
-WELCOME_TEXT = "سلام! به این بات خوش اومدی!"
-GANJOOR_API_URL = "https://api.ganjoor.net"
 
 def get_random_poem():
-    response = requests.get(f"{GANJOOR_API_URL}/api/ganjoor/poem/random", params={"poetId": 7})
+    response = requests.get(f"{constants.GANJOOR_API_URL}/api/ganjoor/poem/random", params={"poetId": 7})
     if response.status_code == 200:
         logger.info("Sent poem.")
         return response.json()
     logger.error("Failed to get random poem")
     return ""
-
-@bot.message_handler(commands=['start', 'hello'])
-def send_welcome(message):
-    bot.reply_to(message, WELCOME_TEXT)
 
 
 @bot.message_handler(commands=['send_poem'])
@@ -49,7 +43,41 @@ def start_sending_audio(message):
 #     else:
 #         bot.reply_to(message, get_audio_info(message.audio))
 
+def register_new_user():
+    logger.info("user registration started")
+    connector = DBConnector(host=os.getenv("MYSQL_HOST"),
+                            user=os.getenv("MYSQL_USER"),
+                            password=os.getenv("MYSQL_PASSWORD"),
+                            database=os.getenv("MYSQL_DB")
+                            )
+    logger.info("connected to mysql")
+    connector.create_session()
+    logger.info("created a session")
+    user = User(name='mamadoo', username='mamadoo')
+    logger.info("created a user")
+    connector.session.add(user)
+    connector.session.commit()
+    logger.info("stored a user")
+
+
+def initialize_logger():
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logger.addHandler(handler)
+    return logger
+
+
+def initialize_telebot():
+    BOT_TOKEN = os.getenv('BOT_TOKEN')
+    bot = telebot.TeleBot(BOT_TOKEN)
+    return bot
 
 
 if __name__ == '__main__':
-    bot.infinity_polling()
+    load_dotenv()
+    logger = initialize_logger()
+
+    # bot = initialize_telebot()
+    # bot.infinity_polling()
