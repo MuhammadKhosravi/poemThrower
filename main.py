@@ -56,8 +56,9 @@ def start_sending_audio(message):
 def get_user_favorite_poet(username):
     stmt = select(User).where(username==username)
     result = mysql_connection.session.execute(stmt)
-    poet_id = [x for x in result][0].favorite_poet
-    logger.info(f"this is the result {poet_id}")
+    user = [x for x in result][0]
+    logger.info("here?")
+    logger.info(f"this is the result {user.favorite_poet}")
     return poet_id
 
 
