@@ -79,5 +79,4 @@ def initialize_logger():
 if __name__ == '__main__':
     load_dotenv()
     logger = initialize_logger()
-    register_new_user()
     # bot.infinity_polling()
