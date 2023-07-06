@@ -64,7 +64,7 @@ def register_new_user():
     connector.create_session()
     logger.info("created a session")
     base = get_base()
-    base.create_all(connector.engine)
+    base.metadata.create_all(connector.engine)
     user = User(name='mamadoo', username='mamadoo')
     logger.info("created a user")
     connector.session.add(user)
