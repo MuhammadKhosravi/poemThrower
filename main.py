@@ -23,7 +23,7 @@ mysql_connection = None
 bot = initialize_telebot()
 
 
-@bot.message_handler(commands=['start', 'hello'])
+@bot.message_handler(commands=['start'])
 def send_welcome(message):
     user_info = {
         "username": message.from_user.username,
@@ -44,7 +44,7 @@ def get_random_poem():
     return ""
 
 
-@bot.message_handler()
+@bot.message_handler(commands=["send_now"])
 def start_sending_audio(message):
     poem_dict = get_random_poem()
     poem_text = poem_dict["plainText"]
