@@ -55,7 +55,7 @@ def start_sending_audio(message):
 @bot.message_handler(regexp=r"(1|2|3|7)")
 def set_favorite_poet(message):
     username = message.from_user.username
-    response = message.chat.text
+    response = message.text
     logger.info(f"we got {response} from a user")
     set_favorite_poet_in_db(username, response)
 
