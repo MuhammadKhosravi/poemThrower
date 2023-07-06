@@ -22,9 +22,9 @@ bot = initialize_telebot()
 
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
-    logger.info(f"this is username  {message['username']}")
-    logger.info(f"this is first name {message['first_name']}")
-    logger.info(f"this is last name {message['last_name']}")
+    logger.info(f"this is username  {message.from_user.username}")
+    logger.info(f"this is first name {message.from_user.first_name}")
+    logger.info(f"this is last name {message.from_user.last_name}")
     # register_new_user()
     bot.reply_to(message, constants.WELCOME_TEXT)
 
