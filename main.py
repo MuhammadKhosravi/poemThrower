@@ -7,6 +7,8 @@ import constants
 from dbconnector import DBConnector
 from user import User
 
+from sqlalchemy.ext.declarative import declarative_base
+
 
 def initialize_telebot():
     BOT_TOKEN = os.getenv('BOT_TOKEN')
@@ -62,6 +64,8 @@ def register_new_user():
     connector.create_session()
     logger.info("created a session")
     user = User(name='mamadoo', username='mamadoo')
+    Base = declarative_base()
+    Base.metadata.create_all(engine)
     logger.info("created a user")
     connector.session.add(user)
     connector.session.commit()
