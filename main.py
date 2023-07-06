@@ -7,9 +7,11 @@ import constants
 from dbconnector import DBConnector
 from user import User
 from user import get_base
-
+from sqlalchemy import update
 
 load_dotenv()
+
+
 def initialize_telebot():
     BOT_TOKEN = os.getenv('BOT_TOKEN')
     bot = telebot.TeleBot(BOT_TOKEN)
@@ -30,6 +32,7 @@ def send_welcome(message):
     }
     register_new_user(user_info)
     bot.reply_to(message, constants.WELCOME_TEXT)
+    bot.send_message(message.chat.id, constants.POEM_CHOICE_TEXT)
 
 
 def get_random_poem():
@@ -41,7 +44,7 @@ def get_random_poem():
     return ""
 
 
-@bot.message_handler(commands=['send_poem'])
+@bot.message_handler()
 def start_sending_audio(message):
     poem_dict = get_random_poem()
     poem_text = poem_dict["plainText"]
@@ -49,15 +52,13 @@ def start_sending_audio(message):
     bot.reply_to(message, f"{poem_text}\n\n*{poem_title}*", parse_mode='Markdown')
 
 
-# @bot.message_handler(content_types=['audio'])
-# def handle_audios(message):
-#     user_id = message.from_user.id
-#     user_audios = get_user_audio_info(user_id)
-#     logger.info(f"User {user_id} sent an audio.")
-#     if len(user_audios):
-#         store_user_audio_info(user_id, get_audio_info(message.audio))
-#     else:
-#         bot.reply_to(message, get_audio_info(message.audio))
+@bot.message_handler(regexp=r"(1|2|3|7)")
+def set_favorite_poet(message):
+    username = message.from_user.username
+    response = message.chat.text
+    logger.info(f"we got {response} from a user")
+    set_favorite_poet_in_db(username, response)
+
 
 def register_new_user(user_info):
     mysql_connection.create_session()
@@ -66,6 +67,15 @@ def register_new_user(user_info):
     user = User(**user_info)
     mysql_connection.session.add(user)
     mysql_connection.session.commit()
+    logger.info("New user registered")
+
+
+def set_favorite_poet_in_db(username, poet_number):
+    stmt = update(User).where(User.username == username).values(favorite_poet=poet_number)
+    mysql_connection.session.execute(stmt)
+    mysql_connection.session.commit()
+    logger.info("updated user favorite poet")
+
 
 def establish_db_connection():
     connector = DBConnector(host=os.getenv("MYSQL_HOST"),
