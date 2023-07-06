@@ -9,7 +9,6 @@ from user import User
 from user import get_base
 
 
-
 def initialize_telebot():
     BOT_TOKEN = os.getenv('BOT_TOKEN')
     bot = telebot.TeleBot(BOT_TOKEN)
@@ -17,12 +16,13 @@ def initialize_telebot():
 
 
 logger = None
-
 bot = initialize_telebot()
 
 
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
+    logger.info(f"this is message object {message}")
+    register_new_user()
     bot.reply_to(message, constants.WELCOME_TEXT)
 
 
@@ -53,24 +53,18 @@ def start_sending_audio(message):
 #     else:
 #         bot.reply_to(message, get_audio_info(message.audio))
 
-def register_new_user():
-    logger.info("user registration started")
+def register_new_user(user_info):
     connector = DBConnector(host=os.getenv("MYSQL_HOST"),
                             user=os.getenv("MYSQL_USER"),
                             password=os.getenv("MYSQL_PASSWORD"),
                             database=os.getenv("MYSQL_DB")
                             )
-    logger.info("connected to mysql")
     connector.create_session()
-    logger.info("created a session")
     base = get_base()
     base.metadata.create_all(connector.engine)
     user = User(name='mamadoo', username='mamadoo')
-    logger.info("created a user")
     connector.session.add(user)
-    logger.info("added a user")
     connector.session.commit()
-    logger.info("stored a user")
 
 
 def initialize_logger():
