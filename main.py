@@ -17,15 +17,18 @@ def initialize_telebot():
 
 
 logger = None
+mysql_connection = None
 bot = initialize_telebot()
 
 
 @bot.message_handler(commands=['start', 'hello'])
 def send_welcome(message):
-    logger.info(f"this is username  {message.from_user.username}")
-    logger.info(f"this is first name {message.from_user.first_name}")
-    logger.info(f"this is last name {message.from_user.last_name}")
-    # register_new_user()
+    user_info = {
+        "username": message.from_user.username,
+        "first_name": message.from_user.first_name,
+        "last_name": message.from_user.last_name
+    }
+    register_new_user(user_info)
     bot.reply_to(message, constants.WELCOME_TEXT)
 
 
@@ -57,17 +60,20 @@ def start_sending_audio(message):
 #         bot.reply_to(message, get_audio_info(message.audio))
 
 def register_new_user(user_info):
+    mysql_connection.create_session()
+    base = get_base()
+    base.metadata.create_all(mysql_connection.engine)
+    user = User(**user_info)
+    connector.session.add(user)
+    connector.session.commit()
+
+def establish_db_connection():
     connector = DBConnector(host=os.getenv("MYSQL_HOST"),
                             user=os.getenv("MYSQL_USER"),
                             password=os.getenv("MYSQL_PASSWORD"),
                             database=os.getenv("MYSQL_DB")
                             )
-    connector.create_session()
-    base = get_base()
-    base.metadata.create_all(connector.engine)
-    # user = User(name='mamadoo', username='mamadoo')
-    # connector.session.add(user)
-    # connector.session.commit()
+    return connector
 
 
 def initialize_logger():
@@ -81,4 +87,5 @@ def initialize_logger():
 
 if __name__ == '__main__':
     logger = initialize_logger()
+    mysql_connection = establish_db_connection()
     bot.infinity_polling()
