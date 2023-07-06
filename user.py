@@ -8,5 +8,3 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     username = Column(String(50))
-
-Base.metadata.create_all(engine)
