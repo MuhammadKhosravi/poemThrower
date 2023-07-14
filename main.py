@@ -7,7 +7,7 @@ import constants
 from dbconnector import DBConnector
 from user import User
 from user import get_base
-from sqlalchemy import update, select
+from sqlalchemy import update, select, exc
 
 load_dotenv()
 
@@ -73,11 +73,11 @@ def set_favorite_poet(message):
 
 def register_new_user(user_info):
     user = User(**user_info)
-    if not mysql_connection.session.contains(user):
+    try:
         mysql_connection.session.add(user)
         mysql_connection.session.commit()
         logger.info("New user registered")
-    else:
+    except exc.IntegrityError:
         logger.info("user already exits")
 
 
