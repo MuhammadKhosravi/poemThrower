@@ -124,6 +124,7 @@ def initialize_logger():
 
 def run_scheduler():
     scheduled_time = get_time(hour=18, minute=0, second=0)
+    scheduled_time = get_time(hour=20, minute=32, second=0)
     schedule.every().day.at(str(scheduled_time)).do(send_poem_to_all_users)
     while True:
         schedule.run_pending()
