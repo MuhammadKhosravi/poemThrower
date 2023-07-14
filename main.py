@@ -11,7 +11,7 @@ from sqlalchemy import update, select, exc
 import schedule
 from time import sleep
 from threading import Thread
-from datetime import datetime
+from datetime import datetime, time as get_time
 
 load_dotenv()
 
@@ -122,7 +122,7 @@ def initialize_logger():
 
 
 def run_scheduler():
-    scheduled_time = datetime.time(hour=18, minute=0, second=0)
+    scheduled_time = get_time(hour=18, minute=0, second=0)
     schedule.every().day.at(str(scheduled_time)).do(send_poem_to_all_users)
     while True:
         schedule.run_pending()
