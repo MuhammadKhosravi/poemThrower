@@ -77,7 +77,7 @@ def register_new_user(user_info):
         mysql_connection.session.commit()
         logger.info("New user registered")
     except exc.IntegrityError:
-        mysqlsession.rollback()
+        mysql_connection.session.rollback()
         logger.info("user already exits")
 
 
