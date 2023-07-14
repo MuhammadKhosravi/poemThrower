@@ -100,7 +100,7 @@ def set_favorite_poet_in_db(user_id, poet_number):
 def send_poem_to_all_users():
     all_users = mysql_connection.session.query(User).all()
     for user in all_users:
-        send_poem_now(user.chat_id, user.favorite_poet)
+        send_poem_to_user(user.chat_id, user.favorite_poet)
 
 
 def establish_db_connection():
@@ -129,7 +129,7 @@ def initialize_logger():
 
 def run_scheduler():
     scheduled_time = get_time(hour=18, minute=0, second=0)
-    scheduled_time = get_time(hour=20, minute=45, second=0)
+    scheduled_time = get_time(hour=20, minute=48, second=0)
     schedule.every().day.at(str(scheduled_time)).do(send_poem_to_all_users)
 
     while True:
