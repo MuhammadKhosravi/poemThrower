@@ -14,3 +14,9 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql-data:/var/lib/mysql
+  poem_thrower:
+    build: ./app/
+    depends_on:
+      - nats
+    ports:
+      - 5001:5000

@@ -17,9 +17,9 @@ load_dotenv()
 
 
 def initialize_telebot():
-    BOT_TOKEN = os.getenv('BOT_TOKEN')
-    bot = telebot.TeleBot(BOT_TOKEN)
-    return bot
+    bot_token = os.getenv('BOT_TOKEN')
+    t_bot = telebot.TeleBot(bot_token)
+    return t_bot
 
 
 logger = None
@@ -57,8 +57,8 @@ def start_sending_audio(message):
     bot.reply_to(message, f"{poem_text}\n\n*{poem_title}*", parse_mode='Markdown')
 
 
-def get_user_favorite_poet(id):
-    stmt = select(User.favorite_poet).where(User.id == id)
+def get_user_favorite_poet(user_id):
+    stmt = select(User.favorite_poet).where(User.id == user_id)
     result = mysql_connection.session.execute(stmt)
     r = [x for x in result]
     logger.info(f"this is the result {r[0][0]}")
@@ -67,10 +67,10 @@ def get_user_favorite_poet(id):
 
 @bot.message_handler(regexp=r"(1|2|3|7)")
 def set_favorite_poet(message):
-    id = message.from_user.id
+    user_id = message.from_user.id
     response = message.text
     logger.info(f"we got {response} from a user")
-    set_favorite_poet_in_db(id, response)
+    set_favorite_poet_in_db(user_id, response)
     bot.send_message(message.chat.id, constants.CHOOSE_SUCCEEDED)
 
 
@@ -85,8 +85,8 @@ def register_new_user(user_info):
         logger.info("user already exits")
 
 
-def set_favorite_poet_in_db(id, poet_number):
-    stmt = update(User).where(User.id == id).values(favorite_poet=poet_number)
+def set_favorite_poet_in_db(user_id, poet_number):
+    stmt = update(User).where(User.id == user_id).values(favorite_poet=poet_number)
     mysql_connection.session.execute(stmt)
     mysql_connection.session.commit()
     logger.info("updated user favorite poet")
@@ -113,6 +113,7 @@ def establish_db_connection():
 
 
 def initialize_logger():
+    global logger
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     handler = logging.StreamHandler()
