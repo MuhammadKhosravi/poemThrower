@@ -132,5 +132,5 @@ def run_scheduler():
 if __name__ == '__main__':
     logger = initialize_logger()
     mysql_connection = establish_db_connection()
-    Thread(target=run_scheduler()).start()
+    Thread(target=run_scheduler).start()
     bot.infinity_polling()
