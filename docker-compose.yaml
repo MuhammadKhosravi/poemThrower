@@ -16,7 +16,5 @@ services:
       - ./mysql-data:/var/lib/mysql
   poem_thrower:
     build: ./app/
-    depends_on:
-      - nats
     ports:
-      - 5001:5000
+      - "443:4000"
