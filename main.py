@@ -30,7 +30,6 @@ def send_welcome(message):
         "first_name": message.from_user.first_name,
         "last_name": message.from_user.last_name
     }
-    logger.info(f"this is the message: {message.from_user}")
     register_new_user(user_info)
     bot.reply_to(message, constants.WELCOME_TEXT)
     bot.send_message(message.chat.id, constants.POEM_CHOICE_TEXT)
@@ -78,6 +77,7 @@ def register_new_user(user_info):
         mysql_connection.session.commit()
         logger.info("New user registered")
     except exc.IntegrityError:
+        mysqlsession.rollback()
         logger.info("user already exits")
 
 
