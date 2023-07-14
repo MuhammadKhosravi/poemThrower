@@ -11,5 +11,6 @@ class DBConnector:
         self.session = None
 
     def create_session(self):
-        self.session = sessionmaker(bind=self.engine)()
+        if self.session is None:
+            self.session = sessionmaker(bind=self.engine)()
 

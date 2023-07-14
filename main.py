@@ -30,6 +30,7 @@ def send_welcome(message):
         "first_name": message.from_user.first_name,
         "last_name": message.from_user.last_name
     }
+    logger.info(f"this is the message: {message.from_user}")
     register_new_user(user_info)
     bot.reply_to(message, constants.WELCOME_TEXT)
     bot.send_message(message.chat.id, constants.POEM_CHOICE_TEXT)
@@ -71,13 +72,13 @@ def set_favorite_poet(message):
 
 
 def register_new_user(user_info):
-    mysql_connection.create_session()
-    base = get_base()
-    base.metadata.create_all(mysql_connection.engine)
     user = User(**user_info)
-    mysql_connection.session.add(user)
-    mysql_connection.session.commit()
-    logger.info("New user registered")
+    if not session.contains(user):
+        mysql_connection.session.add(user)
+        mysql_connection.session.commit()
+        logger.info("New user registered")
+    else:
+        logger.info("user already exits")
 
 
 def set_favorite_poet_in_db(username, poet_number):
@@ -93,6 +94,11 @@ def establish_db_connection():
                             password=os.getenv("MYSQL_PASSWORD"),
                             database=os.getenv("MYSQL_DB")
                             )
+    logger.info("connected to mysql")
+    connector.create_session()
+    base = get_base()
+    base.metadata.create_all(connector.engine)
+    logger.info("created all schemas")
     return connector
 
 
