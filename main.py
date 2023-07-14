@@ -8,6 +8,10 @@ from dbconnector import DBConnector
 from user import User
 from user import get_base
 from sqlalchemy import update, select, exc
+import schedule
+from time import sleep
+from threading import Thread
+from datetime import datetime
 
 load_dotenv()
 
@@ -88,6 +92,12 @@ def set_favorite_poet_in_db(id, poet_number):
     logger.info("updated user favorite poet")
 
 
+def send_poem_to_all_users():
+    all_users = mysql_connection.session.query(User).all()
+    for user in all_users:
+        logger.info(f"{user.id} : {user.favorite_poet}")
+
+
 def establish_db_connection():
     connector = DBConnector(host=os.getenv("MYSQL_HOST"),
                             user=os.getenv("MYSQL_USER"),
@@ -111,7 +121,16 @@ def initialize_logger():
     return logger
 
 
+def run_scheduler():
+    scheduled_time = datetime.time(hour=18, minute=0, second=0)
+    schedule.every().day.at(str(scheduled_time)).do(send_poem_to_all_users)
+    while True:
+        schedule.run_pending()
+        sleep(1)
+
+
 if __name__ == '__main__':
     logger = initialize_logger()
     mysql_connection = establish_db_connection()
+    Thread(target=run_scheduler()).start()
     bot.infinity_polling()
