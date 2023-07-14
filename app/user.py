@@ -9,7 +9,8 @@ class User(Base):
 
     first_name = Column(String(50))
     last_name = Column(String(50))
-    id = Column(String(50), primary_key=True)
+    user_id = Column(String(50), primary_key=True)
+    chat_id = Column(String(50))
     favorite_poet = Column(String(10), default="1")
 
 

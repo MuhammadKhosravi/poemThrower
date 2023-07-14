@@ -30,7 +30,8 @@ bot = initialize_telebot()
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     user_info = {
-        "id": message.from_user.id,
+        "user_id": message.from_user.id,
+        "chat_id": message.chat.id,
         "first_name": message.from_user.first_name,
         "last_name": message.from_user.last_name
     }
@@ -48,13 +49,17 @@ def get_random_poem(poet_id):
     return ""
 
 
-@bot.message_handler(commands=["send_now"])
-def start_sending_audio(message):
-    user_fav_poet = get_user_favorite_poet(message.from_user.id)
-    poem_dict = get_random_poem(user_fav_poet)
+def send_poem_to_user(user_id, poet_id):
+    poem_dict = get_random_poem(poet_id)
     poem_text = poem_dict["plainText"]
     poem_title = poem_dict["fullTitle"]
-    bot.reply_to(message, f"{poem_text}\n\n*{poem_title}*", parse_mode='Markdown')
+    bot.send_message(user_id, f"{poem_text}\n\n*{poem_title}*", parse_mode='Markdown')
+
+
+@bot.message_handler(commands=["send_now"])
+def send_poem_now(message):
+    user_fav_poet = get_user_favorite_poet(message.from_user.id)
+    send_poem_to_user(message.chat.id, user_fav_poet)
 
 
 def get_user_favorite_poet(user_id):
@@ -86,7 +91,7 @@ def register_new_user(user_info):
 
 
 def set_favorite_poet_in_db(user_id, poet_number):
-    stmt = update(User).where(User.id == user_id).values(favorite_poet=poet_number)
+    stmt = update(User).where(User.user_id == user_id).values(favorite_poet=poet_number)
     mysql_connection.session.execute(stmt)
     mysql_connection.session.commit()
     logger.info("updated user favorite poet")
@@ -95,7 +100,7 @@ def set_favorite_poet_in_db(user_id, poet_number):
 def send_poem_to_all_users():
     all_users = mysql_connection.session.query(User).all()
     for user in all_users:
-        logger.info(f"{user.id} : {user.favorite_poet}")
+        send_poem_now(user.chat_id, user.favorite_poet)
 
 
 def establish_db_connection():
@@ -124,8 +129,9 @@ def initialize_logger():
 
 def run_scheduler():
     scheduled_time = get_time(hour=18, minute=0, second=0)
-    scheduled_time = get_time(hour=20, minute=32, second=0)
+    scheduled_time = get_time(hour=20, minute=45, second=0)
     schedule.every().day.at(str(scheduled_time)).do(send_poem_to_all_users)
+
     while True:
         schedule.run_pending()
         sleep(1)
