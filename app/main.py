@@ -41,6 +41,10 @@ def send_welcome(message):
 
 
 def get_random_poem(poet_id):
+    if poet_id == "4":
+        poet_id = "5"
+    elif poet_id == "5":
+        poet_id = "7"
     response = requests.get(f"{constants.GANJOOR_API_URL}/api/ganjoor/poem/random", params={"poetId": poet_id})
     if response.status_code == 200:
         logger.info("Sent poem.")
@@ -70,7 +74,7 @@ def get_user_favorite_poet(user_id):
     return r[0][0]
 
 
-@bot.message_handler(regexp=r"(1|2|3|7)")
+@bot.message_handler(regexp=r"(1|2|3|4|5)")
 def set_favorite_poet(message):
     user_id = message.from_user.id
     response = message.text
@@ -131,7 +135,6 @@ def initialize_logger():
 
 def run_scheduler():
     scheduled_time = get_time(hour=18, minute=0, second=0)
-    scheduled_time = get_time(hour=20, minute=50, second=0)
     schedule.every().day.at(str(scheduled_time)).do(send_poem_to_all_users)
 
     while True:
