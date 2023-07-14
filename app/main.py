@@ -63,7 +63,7 @@ def send_poem_now(message):
 
 
 def get_user_favorite_poet(user_id):
-    stmt = select(User.favorite_poet).where(User.id == user_id)
+    stmt = select(User.favorite_poet).where(User.user_id == user_id)
     result = mysql_connection.session.execute(stmt)
     r = [x for x in result]
     logger.info(f"this is the result {r[0][0]}")
@@ -98,9 +98,11 @@ def set_favorite_poet_in_db(user_id, poet_number):
 
 
 def send_poem_to_all_users():
+    logger.info("scheduler started sending poems")
     all_users = mysql_connection.session.query(User).all()
     for user in all_users:
         send_poem_to_user(user.chat_id, user.favorite_poet)
+    logger.info("scheduler ended sending poems")
 
 
 def establish_db_connection():
@@ -129,7 +131,7 @@ def initialize_logger():
 
 def run_scheduler():
     scheduled_time = get_time(hour=18, minute=0, second=0)
-    scheduled_time = get_time(hour=20, minute=48, second=0)
+    scheduled_time = get_time(hour=20, minute=50, second=0)
     schedule.every().day.at(str(scheduled_time)).do(send_poem_to_all_users)
 
     while True:
