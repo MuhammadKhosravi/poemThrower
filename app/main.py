@@ -86,8 +86,10 @@ def set_favorite_poet(message):
 def register_new_user(user_info):
     user = User(**user_info)
     try:
+        mysql_connection.create_session()
         mysql_connection.session.add(user)
         mysql_connection.session.commit()
+        mysql_connection.session.close()
         logger.info("New user registered")
     except exc.IntegrityError:
         mysql_connection.session.rollback()
@@ -95,9 +97,11 @@ def register_new_user(user_info):
 
 
 def set_favorite_poet_in_db(user_id, poet_number):
+    mysql_connection.create_session()
     stmt = update(User).where(User.user_id == user_id).values(favorite_poet=poet_number)
     mysql_connection.session.execute(stmt)
     mysql_connection.session.commit()
+    mysql_connection.session.close()
     logger.info("updated user favorite poet")
 
 
@@ -109,7 +113,7 @@ def send_poem_to_all_users():
     logger.info("scheduler ended sending poems")
 
 
-def establish_db_connection():
+def get_db_connection():
     connector = DBConnector(host=os.getenv("MYSQL_HOST"),
                             user=os.getenv("MYSQL_USER"),
                             password=os.getenv("MYSQL_PASSWORD"),
@@ -117,9 +121,16 @@ def establish_db_connection():
                             )
     logger.info("connected to mysql")
     connector.create_session()
+    return connector
+
+
+def establish_db_connection():
+    connector = get_db_connection()
     base = get_base()
     base.metadata.create_all(connector.engine)
     logger.info("created all schemas")
+    connector.session.close()
+    logger.info("closing section")
     return connector
 
 
