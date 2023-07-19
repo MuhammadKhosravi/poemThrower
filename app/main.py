@@ -67,6 +67,7 @@ def send_poem_now(message):
 
 
 def get_user_favorite_poet(user_id):
+    get_db_connection()
     stmt = select(User.favorite_poet).where(User.user_id == user_id)
     result = mysql_connection.session.execute(stmt)
     r = [x for x in result]
@@ -86,7 +87,7 @@ def set_favorite_poet(message):
 def register_new_user(user_info):
     user = User(**user_info)
     try:
-        mysql_connection.create_session()
+        get_db_connection()
         mysql_connection.session.add(user)
         mysql_connection.session.commit()
         mysql_connection.session.close()
@@ -97,7 +98,7 @@ def register_new_user(user_info):
 
 
 def set_favorite_poet_in_db(user_id, poet_number):
-    mysql_connection.create_session()
+    get_db_connection()
     stmt = update(User).where(User.user_id == user_id).values(favorite_poet=poet_number)
     mysql_connection.session.execute(stmt)
     mysql_connection.session.commit()
