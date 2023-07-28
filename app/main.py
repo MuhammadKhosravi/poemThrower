@@ -23,7 +23,6 @@ def initialize_telebot():
 
 
 logger = None
-mysql_connection = None
 bot = initialize_telebot()
 
 
@@ -67,7 +66,7 @@ def send_poem_now(message):
 
 
 def get_user_favorite_poet(user_id):
-    get_db_connection()
+    mysql_connection = get_db_connection()
     stmt = select(User.favorite_poet).where(User.user_id == user_id)
     result = mysql_connection.session.execute(stmt)
     r = [x for x in result]
@@ -86,8 +85,8 @@ def set_favorite_poet(message):
 
 def register_new_user(user_info):
     user = User(**user_info)
+    mysql_connection = get_db_connection()
     try:
-        get_db_connection()
         mysql_connection.session.add(user)
         mysql_connection.session.commit()
         mysql_connection.session.close()
@@ -98,7 +97,7 @@ def register_new_user(user_info):
 
 
 def set_favorite_poet_in_db(user_id, poet_number):
-    get_db_connection()
+    mysql_connection = get_db_connection()
     stmt = update(User).where(User.user_id == user_id).values(favorite_poet=poet_number)
     mysql_connection.session.execute(stmt)
     mysql_connection.session.commit()
@@ -156,6 +155,5 @@ def run_scheduler():
 
 if __name__ == '__main__':
     logger = initialize_logger()
-    mysql_connection = establish_db_connection()
     Thread(target=run_scheduler).start()
     bot.infinity_polling()
