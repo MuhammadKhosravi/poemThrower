@@ -107,6 +107,7 @@ def set_favorite_poet_in_db(user_id, poet_number):
 
 def send_poem_to_all_users():
     logger.info("scheduler started sending poems")
+    mysql_connection = get_db_connection()
     all_users = mysql_connection.session.query(User).all()
     for user in all_users:
         send_poem_to_user(user.chat_id, user.favorite_poet)
