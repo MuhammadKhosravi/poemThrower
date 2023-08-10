@@ -44,10 +44,14 @@ def get_random_poem(poet_id):
         poet_id = "5"
     elif poet_id == "5":
         poet_id = "7"
-    response = requests.get(f"{constants.GANJOOR_API_URL}/api/ganjoor/poem/random", params={"poetId": poet_id})
-    if response.status_code == 200:
-        logger.info("Sent poem.")
-        return response.json()
+    counter = 0
+    max_retries = 3
+    while counter < max_retries:
+        response = requests.get(f"{constants.GANJOOR_API_URL}/api/ganjoor/poem/random", params={"poetId": poet_id})
+        if response.status_code == 200:
+            logger.info("Sent poem.")
+            return response.json()
+        counter += 1
     logger.error("Failed to get random poem")
     return ""
 
