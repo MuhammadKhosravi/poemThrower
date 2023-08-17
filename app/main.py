@@ -42,7 +42,7 @@ def send_welcome(message):
 @bot.message_handler(commands=['choose_poet'])
 def poet_choosing_prompt(message):
     bot.send_message(message.chat.id, constants.POEM_CHOICE_TEXT)
-    bot.register_message_handler(message, set_favorite_poet)
+    bot.register_next_step_handler(message, set_favorite_poet)
 
 
 def get_random_poem(poet_id):
