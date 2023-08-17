@@ -36,7 +36,13 @@ def send_welcome(message):
     }
     register_new_user(user_info)
     bot.reply_to(message, constants.WELCOME_TEXT)
+    poet_choosing_prompt(message)
+
+
+@bot.message_handler(commands=['choose_poet'])
+def poet_choosing_prompt(message):
     bot.send_message(message.chat.id, constants.POEM_CHOICE_TEXT)
+    bot.register_message_handler(message, set_favorite_poet)
 
 
 def get_random_poem(poet_id):
@@ -78,7 +84,6 @@ def get_user_favorite_poet(user_id):
     return r[0][0]
 
 
-@bot.message_handler(regexp=r"(1|2|3|4|5)")
 def set_favorite_poet(message):
     user_id = message.from_user.id
     response = message.text
