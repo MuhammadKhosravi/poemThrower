@@ -118,8 +118,12 @@ def send_poem_to_all_users():
     logger.info("scheduler started sending poems")
     mysql_connection = get_db_connection()
     all_users = mysql_connection.session.query(User).all()
-    for user in all_users:
-        send_poem_to_user(user.chat_id, user.favorite_poet)
+    try:
+        for user in all_users:
+            send_poem_to_user(user.chat_id, user.favorite_poet)
+    except Exception as e:
+        logger.error(f"An error occurred{e}")
+
     logger.info("scheduler ended sending poems")
 
 
@@ -155,7 +159,7 @@ def initialize_logger():
 
 
 def run_scheduler():
-    scheduled_time = get_time(hour=18, minute=0, second=0)
+    scheduled_time = get_time(hour=19, minute=0, second=0)
     schedule.every().day.at(str(scheduled_time)).do(send_poem_to_all_users)
 
     while True:
