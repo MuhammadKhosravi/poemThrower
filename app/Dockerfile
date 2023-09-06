@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM registry.docker.ir/python:3.8
 
 # Set the working directory to /app
 WORKDIR /app
@@ -12,6 +12,6 @@ RUN pip install -r requirements.txt
 # Copy the rest of the application code into the container
 COPY . .
 
-EXPOSE 4000
+EXPOSE 443
 
-CMD ["gunicorn", "poemThrower:app", "--workers", "5", "--bind",":4000","--worker-connections=1000" ,"--worker-class=gevent"]
+CMD ["python", "main.py"]
