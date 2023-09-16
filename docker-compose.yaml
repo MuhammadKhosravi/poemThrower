@@ -10,11 +10,9 @@ services:
       MYSQL_DATABASE: "${MYSQL_DB}"
       MYSQL_USER: "${MYSQL_USER}"
       MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
-    ports:
-      - "3306:3306"
+    network_mode: host
     volumes:
       - ./mysql-data:/var/lib/mysql
   poem_thrower:
     build: ./app/
-    ports:
-      - "443:4000"
+    network_mode: host
