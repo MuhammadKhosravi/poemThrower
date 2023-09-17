@@ -16,3 +16,5 @@ services:
   poem_thrower:
     build: ./app/
     network_mode: host
+    environment:
+      TZ: "Asia/Tehran"
