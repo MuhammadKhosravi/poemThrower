@@ -102,7 +102,8 @@ def set_favorite_poet(message):
     response = message.text
     logger.info(f"we got {response} from a user")
     set_favorite_poet_in_db(user_id, response)
-    bot.send_message(message.chat.id, constants.CHOOSE_SUCCEEDED)
+    markup = types.ReplyKeyboardRemove()
+    bot.send_message(message.chat.id, constants.CHOOSE_SUCCEEDED, reply_markup=markup)
 
 
 def register_new_user(user_info):
