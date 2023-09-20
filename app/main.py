@@ -48,7 +48,7 @@ def get_poet_options():
         button = types.KeyboardButton(poet)
         buttons.append(button)
     markup.add(*buttons)
-    return buttons
+    return markup
 
 
 @bot.message_handler(commands=['choose_poet'])
