@@ -2,6 +2,7 @@ import logging
 import os
 import requests
 import telebot
+from telebot import types
 from dotenv import load_dotenv
 import constants
 from dbconnector import DBConnector
@@ -39,9 +40,21 @@ def send_welcome(message):
     poet_choosing_prompt(message)
 
 
+def get_poet_options():
+    markup = types.ReplyKeyboardMarkup(row_width=2)
+    list_of_poets = constants.LIST_OF_POETS
+    buttons = []
+    for poet in list_of_poets:
+        button = types.KeyboardButton(poet)
+        buttons.append(button)
+    markup.add(buttons)
+    return buttons
+
+
 @bot.message_handler(commands=['choose_poet'])
 def poet_choosing_prompt(message):
-    bot.send_message(message.chat.id, constants.POEM_CHOICE_TEXT)
+    buttons = get_poet_options()
+    bot.send_message(message.chat.id, constants.POEM_CHOICE_TEXT, reply_markup=buttons)
     bot.register_next_step_handler(message, set_favorite_poet)
 
 
@@ -105,7 +118,9 @@ def register_new_user(user_info):
         logger.info("user already exits")
 
 
-def set_favorite_poet_in_db(user_id, poet_number):
+def set_favorite_poet_in_db(user_id, poet):
+    list_of_poets = constants.LIST_OF_POETS
+    poet_number = list_of_poets.index(poet) + 1
     mysql_connection = get_db_connection()
     stmt = update(User).where(User.user_id == user_id).values(favorite_poet=poet_number)
     mysql_connection.session.execute(stmt)
