@@ -47,7 +47,7 @@ def get_poet_options():
     for poet in list_of_poets:
         button = types.KeyboardButton(poet)
         buttons.append(button)
-    markup.add(buttons)
+    markup.add(*buttons)
     return buttons
 
 
